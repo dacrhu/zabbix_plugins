@@ -2,6 +2,8 @@
 
 This Zabbix plugin can monitoring your Docker containers via Docker Stats. It is a very simple solution for mixed servers where not only containers run (so running native agent).
 
+It use discovery so your life will easy with this plugin.
+
 Install:
 ---
 1. Import zbx_template_docker_stats.xml in Zabbix webconsole.
