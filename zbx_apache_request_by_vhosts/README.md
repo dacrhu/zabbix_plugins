@@ -4,7 +4,7 @@ This Zabbix plugin can monitoring Apache numbers of requests by vhosts (ServerNa
 
 It use discovery so your life will easy with this plugin.
 
-Dependencie:
+Dependency:
 - lynx
 
 Install:
