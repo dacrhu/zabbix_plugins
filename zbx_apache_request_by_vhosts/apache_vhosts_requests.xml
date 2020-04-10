@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>4.4</version>
+    <date>2020-04-10T12:32:30Z</date>
+    <groups>
+        <group>
+            <name>Templates/Applications</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Template App Apache Requests by Vhosts</template>
+            <name>Template App Apache Requests by Vhosts</name>
+            <groups>
+                <group>
+                    <name>Templates/Applications</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Apache2 Requests by Vhost</name>
+                </application>
+            </applications>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Apache requests by Vhosts</name>
+                    <key>arbv.discovery</key>
+                    <delay>1h</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Apache Request {#VHOST}</name>
+                            <key>arbv.stats[{#VHOST}, {$ARBV_HOST}, {$ARBV_STATUS}]</key>
+                            <history>30d</history>
+                            <units>req</units>
+                            <applications>
+                                <application>
+                                    <name>Apache2 Requests by Vhost</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                    </item_prototypes>
+                    <lld_macro_paths>
+                        <lld_macro_path>
+                            <lld_macro>{#VHOST}</lld_macro>
+                            <path>$.vhost</path>
+                        </lld_macro_path>
+                    </lld_macro_paths>
+                </discovery_rule>
+            </discovery_rules>
+            <macros>
+                <macro>
+                    <macro>{$ARBV_HOST}</macro>
+                    <value>127.0.0.1</value>
+                </macro>
+                <macro>
+                    <macro>{$ARBV_STATUS}</macro>
+                    <value>server-status</value>
+                </macro>
+            </macros>
+        </template>
+    </templates>
+</zabbix_export>
