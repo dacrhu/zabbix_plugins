@@ -1,6 +1,6 @@
 # Apache requests by vhosts plugin for Zabbix with Discovery
 
-This Zabbix plugin can monitoring Apache numbers of requests by vhosts (ServerName).
+This Zabbix plugin can monitoring numbers of requests by vhosts (ServerName).
 
 It use discovery so your life will easy with this plugin.
 
