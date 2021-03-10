@@ -8,6 +8,11 @@ if [ -d /etc/apache2/sites-enabled ] ; then
     VHF="/etc/apache2/sites-enabled"
 fi
 
+# WHM/cpanel uses the /etc/apache2/conf/httpd.conf file
+if [ -d /etc/apache2/conf ] ; then
+    VHF="/etc/apache2/conf"
+fi
+
 if [ "$1" = "discovery" ] ; then
     echo "[{\"vhost\":\"$(grep ServerName $VHF/* | awk {'print $3'} | sed -r '/^\s*$/d' | sort | uniq | awk '{$1=$1};1' | sed ':a;N;$!ba;s/\n/"},{"vhost":"/g')\"}]"
     exit
