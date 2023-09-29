@@ -1,0 +1,145 @@
+zabbix_export:
+  version: '6.0'
+  date: '2023-09-29T23:13:31Z'
+  groups:
+    - uuid: a571c0d144b14fd4a87a9d9b2aa9fcd6
+      name: Templates/Applications
+  templates:
+    - uuid: 2c141d9e8dc3443b8d926086ab238053
+      template: 'Template App Mailcow'
+      name: 'Template App Mailcow'
+      groups:
+        - name: Templates/Applications
+      items:
+        - uuid: e08169c196c847ce86a219cd821faf3e
+          name: 'Queue Manager (mailq)'
+          type: SCRIPT
+          key: mailcow.api.mailq
+          params: |
+            var obj = JSON.parse(value);
+            var request = new HttpRequest();
+            request.addHeader('Accept: application/json');
+            request.addHeader('X-API-Key: ' + obj.api_key);
+            return JSON.parse(request.get(obj.url + '/api/v1/get/mailq/all')).length;
+          parameters:
+            - name: api_key
+              value: '{$MAILCOW.APIKEY}'
+            - name: url
+              value: '{$MAILCOW.URL}'
+          tags:
+            - tag: application
+              value: mailcow
+          triggers:
+            - uuid: b0d18d1b9795486e84ac39f9699a0ef6
+              expression: 'last(/Template App Mailcow/mailcow.api.mailq)>20'
+              name: 'There are too many items in mailq ({ITEM.VALUE})'
+              priority: WARNING
+              tags:
+                - tag: mailcow
+                  value: mailq
+            - uuid: 16e7fb8479a84bacabd6830176b382b7
+              expression: 'last(/Template App Mailcow/mailcow.api.mailq)>40'
+              name: 'There are too many items in mailq ({ITEM.VALUE})'
+              priority: AVERAGE
+              tags:
+                - tag: mailcow
+                  value: mailq
+        - uuid: cceb5e15aba44f9faa74da3735819fa6
+          name: Quarantine
+          type: SCRIPT
+          key: mailcow.api.quarantine
+          delay: 5m
+          params: |
+            var obj = JSON.parse(value);
+            var request = new HttpRequest();
+            request.addHeader('Accept: application/json');
+            request.addHeader('X-API-Key: ' + obj.api_key);
+            return JSON.parse(request.get(obj.url + '/api/v1/get/quarantine/all')).length;
+          parameters:
+            - name: api_key
+              value: '{$MAILCOW.APIKEY}'
+            - name: url
+              value: '{$MAILCOW.URL}'
+          tags:
+            - tag: application
+              value: mailcow
+          triggers:
+            - uuid: 6091733c0dad45ef8464536c9f091b9d
+              expression: 'last(/Template App Mailcow/mailcow.api.quarantine)>1'
+              name: 'There are too many items in quarantine ({ITEM.VALUE})'
+              priority: WARNING
+              tags:
+                - tag: mailcow
+                  value: quarantine
+            - uuid: 2299f16ae62244709e3c0400836ef060
+              expression: 'last(/Template App Mailcow/mailcow.api.quarantine)>10'
+              name: 'There are too many items in quarantine ({ITEM.VALUE})'
+              priority: AVERAGE
+              tags:
+                - tag: mailcow
+                  value: quarantine
+        - uuid: b8cfb41898e64d38b6c7540f3114ebed
+          name: 'Sync jobs errors'
+          type: SCRIPT
+          key: mailcow.api.syncjobs
+          delay: 5m
+          params: |
+            var obj = JSON.parse(value);
+            var request = new HttpRequest();
+            request.addHeader('Accept: application/json');
+            request.addHeader('X-API-Key: ' + obj.api_key);
+            var res = JSON.parse(request.get(obj.url + '/api/v1/get/syncjobs/all/no_log'));
+            var out = 0;
+            for (var i = 0; i < res.length; i++) {
+            	if (res[i].exit_status && res[i].exit_status != 'EX_OK') {
+            		out++;
+            	}
+            }
+            
+            return out;
+          parameters:
+            - name: api_key
+              value: '{$MAILCOW.APIKEY}'
+            - name: url
+              value: '{$MAILCOW.URL}'
+          tags:
+            - tag: application
+              value: mailcow
+          triggers:
+            - uuid: a27ec7e3a4954213a3e811b931bc4d27
+              expression: 'last(/Template App Mailcow/mailcow.api.syncjobs)>0'
+              name: 'There are too many sync jobs errors ({ITEM.VALUE})'
+              priority: WARNING
+              tags:
+                - tag: mailcow
+                  value: syncjobs
+            - uuid: 9de957110a2e4e6fb0936ad8b40c6157
+              expression: 'last(/Template App Mailcow/mailcow.api.syncjobs)>10'
+              name: 'There are too many sync jobs errors ({ITEM.VALUE})'
+              priority: AVERAGE
+              tags:
+                - tag: mailcow
+                  value: syncjobs
+            - uuid: a76b2f83458a496e9b4ad5bbdee9c6c6
+              expression: 'last(/Template App Mailcow/mailcow.api.syncjobs)>20'
+              name: 'There are too many sync jobs errors ({ITEM.VALUE})'
+              priority: HIGH
+              tags:
+                - tag: mailcow
+                  value: syncjobs
+            - uuid: e475a136d1e24fefb129beceb82422a3
+              expression: 'last(/Template App Mailcow/mailcow.api.syncjobs)>30'
+              name: 'There are too many sync jobs errors ({ITEM.VALUE})'
+              priority: DISASTER
+              tags:
+                - tag: mailcow
+                  value: syncjobs
+      tags:
+        - tag: application
+          value: mailcow
+      macros:
+        - macro: '{$MAILCOW.APIKEY}'
+          type: SECRET_TEXT
+          description: X-API-Key
+        - macro: '{$MAILCOW.URL}'
+          description: 'https://yourserver.com'
